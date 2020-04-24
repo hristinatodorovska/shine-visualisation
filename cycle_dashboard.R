@@ -31,7 +31,7 @@ frow1 <- fluidRow(
 )
 
 frow2 <- fluidRow(
-  #box(plotOutput("tableAll", height = 250)),
+  box(plotOutput("hist"),width = 12)
  # box(title = "Controls", sliderInput("slider", "Number of observations:", 1, 100, 50)),
   #checkboxGroupInput("year", "Year:",years)
 )
@@ -56,12 +56,12 @@ server <- function(input, output,session) {
   })
   
   #Table: Total Crashes By Year
-  output$tbl = renderDT({
+  output$tbl <- renderDT({
     # filter year is selected
     if (!is.null(input$varyear)) {
-      df = df[df$Year %in% input$varyear,]
+      df <- df[df$Year %in% input$varyear,]
     }
-    totalData = as.data.frame(t(as.matrix(data.frame(table(df$Year)))))
+    totalData <- as.data.frame(t(as.matrix(data.frame(table(df$Year)))))
     },
     rownames = FALSE, 
     caption = htmltools::tags$caption(
@@ -73,17 +73,17 @@ server <- function(input, output,session) {
     )
   
   #Table: Cyclist Involved
-  output$bi = renderDT({
+  output$bi <- renderDT({
     # filter year is selected 
     if (!is.null(input$varyear)) {
-      df = df[df$Year %in% input$varyear,]
+      df <- df[df$Year %in% input$varyear,]
     }
     # total BICYCLIST
-    bike = sum(df$BICYCLIST)
+    bike <- sum(df$BICYCLIST)
     # total Not BICYCLIST
-    noBike = sum(df$TOTAL_PERSONS) - bike
-    tmpBike = c(bike, noBike)
-    biData = data.frame(tmpBike)
+    noBike <- sum(df$TOTAL_PERSONS) - bike
+    tmpBike <- c(bike, noBike)
+    biData <- data.frame(tmpBike)
     },
     rownames = c("Yes", "No"), 
     caption = htmltools::tags$caption(
@@ -95,17 +95,17 @@ server <- function(input, output,session) {
     )
   
   #Table: Injuries Caused by Crash
-  output$inj = renderDT({
+  output$inj <- renderDT({
     # filter year is selected 
     if (!is.null(input$varyear)) {
-      df = df[df$Year %in% input$varyear,]
+      df <- df[df$Year %in% input$varyear,]
     }
     # total INJ_OR_FATAL
-    inj = sum(df$INJ_OR_FATAL)
+    inj <- sum(df$INJ_OR_FATAL)
     # total NONINJURED
-    nonInj = sum(df$NONINJURED)
-    tmpInj = c(inj, nonInj)
-    injData = data.frame(tmpInj)
+    nonInj <- sum(df$NONINJURED)
+    tmpInj <- c(inj, nonInj)
+    injData <- data.frame(tmpInj)
   },
   rownames = c("Yes", "No"), 
   caption = htmltools::tags$caption(
@@ -117,19 +117,19 @@ server <- function(input, output,session) {
   )
   
   #Table: Fatal Accident
-  output$fatal = renderDT({
+  output$fatal <- renderDT({
     # filter year is selected 
     if (!is.null(input$varyear)) {
-      df = df[df$Year %in% input$varyear,]
+      df <- df[df$Year %in% input$varyear,]
       
     }
-    fatalDf = df[df$FATALITY>0,]
+    fatalDf <- df[df$FATALITY>0,]
     # fatal accident
     fatal = nrow(fatalDf)
     # no fatal accident
-    nonFatal =nrow(df) - fatal
-    tmpFatal = c(fatal, nonFatal)
-    fatalData = data.frame(tmpFatal)
+    nonFatal <- nrow(df) - fatal
+    tmpFatal <- c(fatal, nonFatal)
+    fatalData <- data.frame(tmpFatal)
   },
   rownames = c("Yes", "No"), 
   caption = htmltools::tags$caption(
@@ -139,6 +139,22 @@ server <- function(input, output,session) {
                                      "$(thead).remove();",
                                      "}"))
   )
+
+  # Barchar: Number of Accident per Month
+  output$hist <- renderPlot({
+    # filter year is selected
+    if (!is.null(input$varyear)) {
+      df <- df[df$Year %in% input$varyear,]
+      
+    }
+    data <- df %>% group_by(Year, Month) %>% summarise(Freq=n())
+    data <- data[order(data$Year, data$Month),]
+    
+    barplot(data$Freq, names.arg = paste( month.abb[data$Month],data$Year, sep=" "),
+            las=2, col = "green", main="Crashes by Month",ylim=c(0,200)
+            )
+
+  })
   
 }
 
