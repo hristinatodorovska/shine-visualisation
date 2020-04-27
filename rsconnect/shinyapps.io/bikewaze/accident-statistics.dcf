@@ -1,0 +1,13 @@
+name: accident-statistics
+title: accident-statistics
+username:
+account: bikewaze
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2184280
+bundleId: 3066666
+url: https://bikewaze.shinyapps.io/accident-statistics/
+when: 1587897340.87159
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: .RData|README.md|two-file-shiny-app/app.R|two-file-shiny-app/server.R|two-file-shiny-app/ui.R|.idea
